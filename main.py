@@ -13,6 +13,7 @@ display_width = 800
 display_height = 600
 
 img = pygame.image.load("head.png")
+appleimg = pygame.image.load("apple.png")
 
 FPS = 30
 block_size = 20
@@ -20,20 +21,54 @@ block_size = 20
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("Slither")
 
-font = pygame.font.SysFont(None, 25)
-clock = pygame.time.Clock()
-direction = "left"
+smallfont = pygame.font.SysFont("comicsansms", 25)
+medfont = pygame.font.SysFont("comicsansms", 50)
+largefont = pygame.font.SysFont("comicsansms", 80)
 
-def text_objects(text, color):
+clock = pygame.time.Clock()
+
+
+def text_objects(text, color, size="small"):
+    if size == "small":
+        font = smallfont
+    if size == "medium":
+        font = medfont
+    if size == "large":
+        font = largefont
     textSurface = font.render(text, True, color)
     return textSurface, textSurface.get_rect()
 
 
-def message_to_screen(msg, color, y_displace=0):
-    textSurf, textRect = text_objects(msg, color)
+def message_to_screen(msg, color, y_displace=0, size="small"):
+    textSurf, textRect = text_objects(msg, color, size)
     textRect.center = (display_width / 2), (display_height / 2) + y_displace
     # screen_text = font.render(msg, True, color)
     gameDisplay.blit(textSurf, textRect)
+
+
+def game_intro():
+    intro = True
+    while intro:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                if  event.key == pygame.K_c:
+                    intro = False
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+        gameDisplay.fill(white)
+        message_to_screen("Welcom to Slither", green, -100, "large")
+        message_to_screen("The objective of the game is to ead red apples", black, -30)
+        message_to_screen("The more apples you eat, the longer you get", black, 10)
+        message_to_screen("If you run into yourself, or the edges, you die!", black, 50)
+        message_to_screen("Press C to play or Q to quit", black, 180)
+        pygame.display.update()
+        clock.tick(15)
 
 
 def snake(block_size, snakelist):
@@ -52,6 +87,7 @@ def snake(block_size, snakelist):
 
 def gameLoop():
     global direction
+    direction = "left"
     gameExit = False
     gameOver = False
 
@@ -67,8 +103,8 @@ def gameLoop():
     while not gameExit:
         while gameOver:
             gameDisplay.fill(white)
-            message_to_screen("Game over", red, -50)
-            message_to_screen("Press C to play again or Q to quit", black)
+            message_to_screen("Game over", red, -80, size="large")
+            message_to_screen("Press C to play again or Q to quit", black, size="medium")
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -110,7 +146,8 @@ def gameLoop():
         gameDisplay.fill(white)
 
         AppleThickness = 30
-        pygame.draw.rect(gameDisplay, red, [randAppleX, randAppleY, AppleThickness, AppleThickness])
+        # pygame.draw.rect(gameDisplay, red, [randAppleX, randAppleY, AppleThickness, AppleThickness])
+        gameDisplay.blit(appleimg, (randAppleX, randAppleY))
 
         snakeHead = [lead_x, lead_y]
         snakeList.append(snakeHead)
@@ -138,6 +175,7 @@ def gameLoop():
         clock.tick(FPS)
 
 
+game_intro()
 gameLoop()
 pygame.quit()
 quit()
