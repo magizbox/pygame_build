@@ -1,5 +1,4 @@
 import pygame
-import time
 import random
 
 pygame.init()
@@ -21,6 +20,10 @@ pygame.display.set_icon(icon)
 FPS = 30
 AppleThickness = 30
 block_size = 20
+
+eat_sound = pygame.mixer.Sound("eat.wav")
+start_sound = pygame.mixer.Sound("start.wav")
+game_over_sound = pygame.mixer.Sound("game_over.wav")
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("Slither")
@@ -135,9 +138,10 @@ def gameLoop():
     snakeList = [[-1, -1]] * (snakeLength - 1)
 
     randAppleX, randAppleY = randAppleGen()
-
+    pygame.mixer.Sound.play(start_sound)
     while not gameExit:
         if gameOver:
+            pygame.mixer.Sound.play(game_over_sound)
             gameDisplay.fill(white)
             message_to_screen("Game over", red, -80, size="large")
             message_to_screen("Press C to play again or Q to quit", black, size="medium")
@@ -202,6 +206,7 @@ def gameLoop():
 
         if lead_x > randAppleX and lead_x < randAppleX + AppleThickness or lead_x + block_size > randAppleX and lead_x + block_size < randAppleX + AppleThickness:
             if lead_y > randAppleY and lead_y < randAppleY + AppleThickness or lead_y + block_size > randAppleY and lead_y + block_size < randAppleY + AppleThickness:
+                pygame.mixer.Sound.play(eat_sound)
                 snakeLength += 1
                 randAppleX, randAppleY = randAppleGen()
 
