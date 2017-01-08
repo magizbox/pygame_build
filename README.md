@@ -6,13 +6,15 @@ So I decide to take challenge to build some games in the first Magizbox Build Se
 
 I built two classical games: Slither and Tank. I was super fun for building these games. Enjoy for yourself. 
 
-**More Information**
+Video demonstration: https://www.youtube.com/watch?v=1PVl-6cdZus
 
-You can find free wav sounds here http://www.freesound.org/ and  http://audio.online-convert.com/convert-to-wav
+**Tips**
+
+* You can find and make your own free wav files in these sites http://www.freesound.org/ and  http://audio.online-convert.com/convert-to-wav
 
 ## Magizbox Build Series Introduction
 
-Magizbox Build is my side project to build thing beside my blog magizbox.com. Building a complete and helpful product will help me review and express my knowledge better.
+Magizbox Build Series is my side project to build thing beside my blog magizbox.com. Building a complete and helpful product will help me review and express my knowledge better.
 
 **PS**: Pull requests are always warmly welcome.
 
