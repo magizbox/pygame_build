@@ -1,5 +1,6 @@
 import pygame
 import random
+from game import Game
 
 pygame.init()
 
@@ -18,14 +19,14 @@ icon = pygame.image.load('resources/apple.png')
 pygame.display.set_icon(icon)
 
 FPS = 30
-AppleThickness = 30
+apple_thickness = 30
 block_size = 20
 
 eat_sound = pygame.mixer.Sound("resources/eat.wav")
 start_sound = pygame.mixer.Sound("resources/start.wav")
 game_over_sound = pygame.mixer.Sound("resources/game_over.wav")
 
-gameDisplay = pygame.display.set_mode((display_width, display_height))
+game_display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("Slither")
 
 smallfont = pygame.font.SysFont("comicsansms", 25)
@@ -34,79 +35,13 @@ largefont = pygame.font.SysFont("comicsansms", 80)
 
 clock = pygame.time.Clock()
 
-
-def pause():
-    paused = True
-    gameDisplay.fill(white)
-    message_to_screen("Paused", black, -100, "large")
-    message_to_screen("Press C to continue or Q to quit", black, 25)
-    pygame.display.update()
-    while paused:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_c:
-                    paused = False
-                elif event.key == pygame.K_q:
-                    pygame.quit()
-                    quit()
-        clock.tick(5)
-
-
-def score(score):
-    text = smallfont.render("Score: " + str(score), True, black)
-    gameDisplay.blit(text, [0, 0])
-
+game = Game()
 
 def randAppleGen():
-    randAppleX = round(random.randrange(0, display_width - AppleThickness))  # / 10.0) * 10
-    randAppleY = round(random.randrange(0, display_height - AppleThickness))  # / 10.0) * 10
+    randAppleX = round(random.randrange(0, display_width - apple_thickness))  # / 10.0) * 10
+    randAppleY = round(random.randrange(0, display_height - apple_thickness))  # / 10.0) * 10
     return randAppleX, randAppleY
 
-
-def text_objects(text, color, size="small"):
-    if size == "small":
-        font = smallfont
-    if size == "medium":
-        font = medfont
-    if size == "large":
-        font = largefont
-    textSurface = font.render(text, True, color)
-    return textSurface, textSurface.get_rect()
-
-
-def message_to_screen(msg, color, y_displace=0, size="small"):
-    textSurf, textRect = text_objects(msg, color, size)
-    textRect.center = (display_width / 2), (display_height / 2) + y_displace
-    # screen_text = font.render(msg, True, color)
-    gameDisplay.blit(textSurf, textRect)
-
-
-def game_intro():
-    intro = True
-    while intro:
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_c:
-                    intro = False
-                if event.key == pygame.K_q:
-                    pygame.quit()
-                    quit()
-        gameDisplay.fill(white)
-        message_to_screen("Welcom to Slither", green, -100, "large")
-        message_to_screen("The objective of the game is to ead red apples", black, -30)
-        message_to_screen("The more apples you eat, the longer you get", black, 10)
-        message_to_screen("If you run into yourself, or the edges, you die!", black, 50)
-        message_to_screen("Press C to play or Q to quit", black, 180)
-        pygame.display.update()
-        clock.tick(15)
 
 
 def snake(block_size, snakelist):
@@ -118,16 +53,16 @@ def snake(block_size, snakelist):
         head = img
     if direction == "down":
         head = pygame.transform.rotate(img, 180)
-    gameDisplay.blit(head, (snakelist[-1][0], snakelist[-1][1]))
+    game_display.blit(head, (snakelist[-1][0], snakelist[-1][1]))
     for position in snakelist[:-1]:
-        pygame.draw.rect(gameDisplay, green, [position[0], position[1], block_size, block_size])
+        pygame.draw.rect(game_display, green, [position[0], position[1], block_size, block_size])
 
 
-def gameLoop():
+def game_loop():
     global direction
     direction = "left"
-    gameExit = False
-    gameOver = False
+    game_exit = False
+    game_over = False
 
     lead_x = display_width / 2
     lead_y = display_height / 2
@@ -139,27 +74,27 @@ def gameLoop():
 
     randAppleX, randAppleY = randAppleGen()
     pygame.mixer.Sound.play(start_sound)
-    while not gameExit:
-        if gameOver:
+    while not game_exit:
+        if game_over:
             pygame.mixer.Sound.play(game_over_sound)
-            gameDisplay.fill(white)
-            message_to_screen("Game over", red, -80, size="large")
-            message_to_screen("Press C to play again or Q to quit", black, size="medium")
+            game_display.fill(white)
+            game.message_to_screen("Game over", red, -80, size="large")
+            game.message_to_screen("Press C to play again or Q to quit", black, size="medium")
             pygame.display.update()
-        while gameOver:
+        while game_over:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    gameOver = False
-                    gameExit = True
+                    game_over = False
+                    game_exit = True
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
-                        gameExit = True
-                        gameOver = False
+                        game_exit = True
+                        game_over = False
                     if event.key == pygame.K_c:
-                        gameLoop()
+                        game_loop()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                gameExit = True
+                game_exit = True
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -179,41 +114,42 @@ def gameLoop():
                     lead_y_change = block_size
                     lead_x_change = 0
                 elif event.key == pygame.K_p:
-                    pause()
+                    game.pause()
         if lead_x >= display_width or lead_x < 0 or lead_y >= display_height or lead_y < 0:
-            gameOver = True
+            game_over = True
 
         lead_x += lead_x_change
         lead_y += lead_y_change
-        gameDisplay.fill(white)
+        game_display.fill(white)
 
         # pygame.draw.rect(gameDisplay, red, [randAppleX, randAppleY, AppleThickness, AppleThickness])
-        gameDisplay.blit(appleimg, (randAppleX, randAppleY))
+        game_display.blit(appleimg, (randAppleX, randAppleY))
 
-        snakeHead = [lead_x, lead_y]
-        snakeList.append(snakeHead)
+        snake_head = [lead_x, lead_y]
+        snakeList.append(snake_head)
 
         if len(snakeList) > snakeLength:
             del snakeList[0]
 
         for segment in snakeList[:-1]:
-            if segment == snakeHead:
-                gameOver = True
+            if segment == snake_head:
+                game_over = True
         snake(block_size, snakeList)
 
-        score(snakeLength - 1)
+        game.score(snakeLength - 1)
         pygame.display.update()
 
-        if lead_x > randAppleX and lead_x < randAppleX + AppleThickness or lead_x + block_size > randAppleX and lead_x + block_size < randAppleX + AppleThickness:
-            if lead_y > randAppleY and lead_y < randAppleY + AppleThickness or lead_y + block_size > randAppleY and lead_y + block_size < randAppleY + AppleThickness:
+        if lead_x > randAppleX and lead_x < randAppleX + apple_thickness or lead_x + block_size > randAppleX and lead_x + block_size < randAppleX + apple_thickness:
+            if lead_y > randAppleY and lead_y < randAppleY + apple_thickness or lead_y + block_size > randAppleY and lead_y + block_size < randAppleY + apple_thickness:
                 pygame.mixer.Sound.play(eat_sound)
                 snakeLength += 1
                 randAppleX, randAppleY = randAppleGen()
 
         clock.tick(FPS)
 
+
 if __name__ == '__main__':
-    game_intro()
-    gameLoop()
+    game.game_intro()
+    game_loop()
     pygame.quit()
     quit()
