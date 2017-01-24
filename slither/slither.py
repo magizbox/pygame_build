@@ -11,19 +11,19 @@ green = (0, 155, 0)
 display_width = 800
 display_height = 600
 
-img = pygame.image.load("head.png")
-appleimg = pygame.image.load("apple.png")
+img = pygame.image.load("resources/head.png")
+appleimg = pygame.image.load("resources/apple.png")
 
-icon = pygame.image.load('apple.png')
+icon = pygame.image.load('resources/apple.png')
 pygame.display.set_icon(icon)
 
 FPS = 30
 AppleThickness = 30
 block_size = 20
 
-eat_sound = pygame.mixer.Sound("eat.wav")
-start_sound = pygame.mixer.Sound("start.wav")
-game_over_sound = pygame.mixer.Sound("game_over.wav")
+eat_sound = pygame.mixer.Sound("resources/eat.wav")
+start_sound = pygame.mixer.Sound("resources/start.wav")
+game_over_sound = pygame.mixer.Sound("resources/game_over.wav")
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("Slither")
@@ -212,8 +212,8 @@ def gameLoop():
 
         clock.tick(FPS)
 
-
-game_intro()
-gameLoop()
-pygame.quit()
-quit()
+if __name__ == '__main__':
+    game_intro()
+    gameLoop()
+    pygame.quit()
+    quit()

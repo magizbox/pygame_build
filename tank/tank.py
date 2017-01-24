@@ -1,5 +1,4 @@
 import pygame
-import time
 import random
 
 pygame.init()
@@ -16,8 +15,8 @@ light_green = (0, 255, 0)
 display_width = 800
 display_height = 600
 
-fire_sound = pygame.mixer.Sound("gun.wav")
-explosion_sound = pygame.mixer.Sound("explosion.wav")
+fire_sound = pygame.mixer.Sound("resources/gun.wav")
+explosion_sound = pygame.mixer.Sound("resources/explosion.wav")
 FPS = 30
 block_size = 20
 
@@ -542,10 +541,7 @@ def gameLoop():
         elif enemy_health == 0:
             show_game_win()
 
-
-# game_intro()
-# show_game_over()
-# show_game_win()
-gameLoop()
-pygame.quit()
-quit()
+if __name__ == '__main__':
+    gameLoop()
+    pygame.quit()
+    quit()
