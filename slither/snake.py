@@ -32,3 +32,22 @@ class Snake:
     def update(self):
         self.x += self.x_change
         self.y += self.y_change
+        snake_head = [self.x, self.y]
+        self.list.append(snake_head)
+
+        if len(self.list) > self.length:
+            del self.list[0]
+
+    def is_die(self, game):
+        if self.is_boundary(game):
+            return True
+        snake_head = [self.x, self.y]
+        for segment in self.list[:-1]:
+            if segment == snake_head:
+                return True
+        return False
+
+    def is_boundary(self, game):
+        display_width = game.display_width
+        display_height = game.display_height
+        return self.x >= display_width or self.x < 0 or self.y >= display_height or self.y < 0

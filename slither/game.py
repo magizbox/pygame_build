@@ -14,6 +14,9 @@ pygame.init()
 display_width = 800
 display_height = 600
 
+FPS = 30
+block_size = 20
+
 img = pygame.image.load("resources/head.png")
 appleimg = pygame.image.load("resources/apple.png")
 
@@ -26,9 +29,15 @@ clock = pygame.time.Clock()
 
 apple_thickness = 30
 
+eat_sound = pygame.mixer.Sound("resources/eat.wav")
+start_sound = pygame.mixer.Sound("resources/start.wav")
+game_over_sound = pygame.mixer.Sound("resources/game_over.wav")
+
 
 class Game:
     def __init__(self):
+        self.display_width = display_width
+        self.display_height = display_height
         self.create_apple()
         self.create_snake()
 
@@ -41,23 +50,22 @@ class Game:
         x = display_width / 2
         y = display_height / 2
         self.snake = Snake(x, y)
-    def pause(self, game_display):
+
+    def game_pause(self):
         paused = True
         game_display.fill(white)
-        Game.message_to_screen("Paused", black, -100, "large")
-        Game.message_to_screen("Press C to continue or Q to quit", black, 25)
+        self.message_to_screen("Paused", black, -100, "large")
+        self.message_to_screen("Press C to continue or Q to quit", black, 25)
         pygame.display.update()
         while paused:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    quit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_c:
                         paused = False
                     elif event.key == pygame.K_q:
                         pygame.quit()
-                        quit()
             clock.tick(5)
 
     def text_objects(self, text, color, size="small"):
@@ -82,16 +90,14 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    quit()
-
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_c:
-                        intro = False
+                        self.game_loop()
+                        return
                     if event.key == pygame.K_q:
                         pygame.quit()
-                        quit()
             game_display.fill(white)
-            self.message_to_screen("Welcom to Slither", green, -100, "large")
+            self.message_to_screen("Welcome to Slither", green, -100, "large")
             self.message_to_screen("The objective of the game is to ead red apples", black, -30)
             self.message_to_screen("The more apples you eat, the longer you get", black, 10)
             self.message_to_screen("If you run into yourself, or the edges, you die!", black, 50)
@@ -99,11 +105,8 @@ class Game:
             pygame.display.update()
             clock.tick(15)
 
-    def draw_score(self, score):
-        text = smallfont.render("Score: " + str(score), True, black)
-        game_display.blit(text, [0, 0])
-
-    def draw_snake(self, block_size, snakelist):
+    def draw_snake(self, block_size):
+        snakelist = self.snake.list
         direction = self.snake.direction
         if direction == "right":
             head = pygame.transform.rotate(img, 270)
@@ -120,8 +123,73 @@ class Game:
     def draw_apple(self):
         game_display.blit(appleimg, (self.apple.x, self.apple.y))
 
-    def is_boundary(self):
-        return self.snake.x >= display_width or self.snake.x < 0 or self.snake.y >= display_height or self.snake.y < 0
+    def is_eat(self):
+        apple_x = self.apple.x
+        apply_y = self.apple.y
+        apple_thickness = self.apple.apple_thick_ness
+        lead_x = self.snake.x
+        lead_y = self.snake.y
+        if lead_x > apple_x and lead_x < apple_x + apple_thickness or lead_x + block_size > apple_x and lead_x + block_size < apple_x + apple_thickness:
+            if lead_y > apply_y and lead_y < apply_y + apple_thickness or lead_y + block_size > apply_y and lead_y + block_size < apply_y + apple_thickness:
+                return True
+        return False
 
     def update(self):
         self.snake.update()
+
+    def game_over(self):
+        game_over = True
+        pygame.mixer.Sound.play(game_over_sound)
+        game_display.fill(white)
+        self.message_to_screen("Game over", red, -80, size="large")
+        self.message_to_screen("Press C to play again or Q to quit", black, size="medium")
+        pygame.display.update()
+        while game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        return
+                    if event.key == pygame.K_c:
+                        self.create_snake()
+                        self.game_loop()
+
+    def game_loop(self):
+        pygame.mixer.Sound.play(start_sound)
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        self.snake.move_left()
+                    elif event.key == pygame.K_RIGHT:
+                        self.snake.move_right()
+                    elif event.key == pygame.K_UP:
+                        self.snake.move_up()
+                    elif event.key == pygame.K_DOWN:
+                        self.snake.move_down()
+                    elif event.key == pygame.K_p:
+                        self.game_pause()
+            self.update()
+            self.draw()
+            if self.snake.is_die(self):
+                self.game_over()
+                return
+            if self.is_eat():
+                pygame.mixer.Sound.play(eat_sound)
+                self.snake.length += 1
+                self.create_apple()
+            clock.tick(FPS)
+
+    def draw_score(self, score):
+        text = smallfont.render("Score: " + str(score), True, black)
+        game_display.blit(text, [0, 0])
+
+    def draw(self):
+        game_display.fill(white)
+        self.draw_apple()
+        self.draw_snake(block_size)
+        self.draw_score(self.snake.length - 1)
+        pygame.display.update()
