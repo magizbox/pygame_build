@@ -1,6 +1,6 @@
-## Magizbox Build: Build games with pygame
+## Magizbox Build #1: Build games with pygame
 
-Sometimes, as a technical leader in my team, I must training our new freshers about basic programming like object oriented programming. I would love to express those concepts of oop in some games and I find some concepts like inheritance and encapsulation will fit perfectly with some object in games.
+Sometimes, as a technical leader in my team, I must training our new freshers about basic programming like object oriented programming. I would love to express those concepts of oop in some games and I find inheritance and encapsulation will fit perfectly with some objects in game.
 
 So I decide to take challenge to build some games in the first Magizbox Build Series.
 
