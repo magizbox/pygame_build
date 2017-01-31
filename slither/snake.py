@@ -51,3 +51,6 @@ class Snake:
         display_width = game.display_width
         display_height = game.display_height
         return self.x >= display_width or self.x < 0 or self.y >= display_height or self.y < 0
+
+    def eat(self):
+        self.length += 1

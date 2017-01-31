@@ -138,13 +138,12 @@ class Game:
         self.snake.update()
 
     def game_over(self):
-        game_over = True
         pygame.mixer.Sound.play(game_over_sound)
         game_display.fill(white)
         self.message_to_screen("Game over", red, -80, size="large")
         self.message_to_screen("Press C to play again or Q to quit", black, size="medium")
         pygame.display.update()
-        while game_over:
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
@@ -179,7 +178,7 @@ class Game:
                 return
             if self.is_eat():
                 pygame.mixer.Sound.play(eat_sound)
-                self.snake.length += 1
+                self.snake.eat()
                 self.create_apple()
             clock.tick(FPS)
 
